@@ -3,6 +3,7 @@ import ValidationException from "../../domain/exception/ValidationException";
 import MonitoredService from "../../domain/model/MonitoredService";
 import { SetMonitoredServiceAsHealthyDTO } from "../../domain/ports/in/ConsoleService";
 import { PagerRepository } from "../../domain/ports/out";
+import { isServiceHealthy, parseMonitoredServiceFromDTO } from "../lib/common";
 import SetMonitoredServiceAsHealthyValidator from "../validator/SetMonitoredServiceAsHealthyValidator";
 
 class FlagServiceAsHealthy {
@@ -12,12 +13,12 @@ class FlagServiceAsHealthy {
     this.pagerRepository = pagerRepository;
   }
 
-  async execute(data: SetMonitoredServiceAsHealthyDTO): Promise<any> {
+  async execute(data: any): Promise<any> {
     await this.validate(data);
 
-    const monitoredService = await this.getMonitoredService(data.serviceId);
+    const monitoredService = await this.getMonitoredService(data);
 
-    if (this.isServiceHealthy(monitoredService)) {
+    if (isServiceHealthy(monitoredService)) {
       throw new ServiceIsHealthyException();
     } else {
       await this.pagerRepository.setMonitoredService({
@@ -29,7 +30,7 @@ class FlagServiceAsHealthy {
     }
   }
 
-  private async validate(data: SetMonitoredServiceAsHealthyDTO): Promise<void> {
+  private async validate(data: any): Promise<void> {
     const validator = new SetMonitoredServiceAsHealthyValidator();
 
     if (!(await validator.validate(data))) {
@@ -39,23 +40,13 @@ class FlagServiceAsHealthy {
     }
   }
 
-  private async getMonitoredService(data: any): Promise<MonitoredService> {
+  private async getMonitoredService(
+    data: SetMonitoredServiceAsHealthyDTO
+  ): Promise<MonitoredService> {
     const monitoredServiceFromDb = await this.pagerRepository.getMonitoredService(
       data.serviceId
     );
-    return this.parseMonitoredService(monitoredServiceFromDb);
-  }
-
-  private parseMonitoredService(data: any): MonitoredService {
-    return MonitoredService.fromJSON({
-      service_id: data.service_id,
-      acknowledged: data.acknowledged,
-      healthy: data.healthy,
-    });
-  }
-
-  private isServiceHealthy(monitoredService: MonitoredService): boolean {
-    return monitoredService.healthy;
+    return parseMonitoredServiceFromDTO(monitoredServiceFromDb);
   }
 }
 

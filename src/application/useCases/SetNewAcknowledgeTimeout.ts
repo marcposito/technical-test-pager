@@ -4,7 +4,7 @@ import ServiceIsHealthyException from "../../domain/exception/ServiceIsHealthyEx
 import ValidationException from "../../domain/exception/ValidationException";
 import EscalationPolicy from "../../domain/model/EscalationPolicy";
 import MonitoredService from "../../domain/model/MonitoredService";
-import { SMS, Email, EscalationTarget } from "../../domain/model/types";
+import { EscalationTarget } from "../../domain/model/types";
 import { SetNewAcknowledgeTimeoutDTO } from "../../domain/ports/in";
 import {
   PagerRepository,
@@ -13,6 +13,13 @@ import {
   EscalationPolicyService,
   TimerService,
 } from "../../domain/ports/out";
+import {
+  isChannelSMS,
+  isServiceAlreadyAcknowledged,
+  isServiceHealthy,
+  parseEscalationPolicyFromDTO,
+  parseMonitoredServiceFromDTO,
+} from "../lib/common";
 import SetNewAcknowledgedTimeoutValidator from "../validator/SetNewAcknowledgedTimeoutValidator";
 
 class SetNewAcknowledgeTimeout {
@@ -36,11 +43,11 @@ class SetNewAcknowledgeTimeout {
     this.escalationPolicyService = escalationPolicyService;
   }
 
-  async execute(data: SetNewAcknowledgeTimeoutDTO): Promise<any> {
+  async execute(data: any): Promise<any> {
     await this.validate(data);
 
-    let monitoredService = await this.getMonitoredService(data.serviceId);
-    const escalationPolicy = await this.getEscalationPolicy(data.serviceId);
+    let monitoredService = await this.getMonitoredService(data);
+    const escalationPolicy = await this.getEscalationPolicy(data);
 
     this.validateWeCanScaleAlertToTheNextLevel(
       monitoredService,
@@ -57,7 +64,7 @@ class SetNewAcknowledgeTimeout {
     await this.setTimer(monitoredService.serviceId);
   }
 
-  private async validate(data: SetNewAcknowledgeTimeoutDTO): Promise<void> {
+  private async validate(data: any): Promise<void> {
     const validator = new SetNewAcknowledgedTimeoutValidator();
 
     if (!(await validator.validate(data))) {
@@ -67,34 +74,22 @@ class SetNewAcknowledgeTimeout {
     }
   }
 
-  private async getMonitoredService(data: any): Promise<MonitoredService> {
+  private async getMonitoredService(
+    data: SetNewAcknowledgeTimeoutDTO
+  ): Promise<MonitoredService> {
     const monitoredServiceFromDb = await this.pagerRepository.getMonitoredService(
       data.serviceId
     );
-    return this.parseMonitoredService(monitoredServiceFromDb);
+    return parseMonitoredServiceFromDTO(monitoredServiceFromDb);
   }
 
-  private parseMonitoredService(data: any): MonitoredService {
-    return MonitoredService.fromJSON({
-      service_id: data.service_id,
-      acknowledged: data.acknowledged,
-      healthy: data.healthy,
-    });
-  }
-
-  private async getEscalationPolicy(data: any): Promise<EscalationPolicy> {
+  private async getEscalationPolicy(
+    data: SetNewAcknowledgeTimeoutDTO
+  ): Promise<EscalationPolicy> {
     const escalationPolicyFromDb = await this.escalationPolicyService.getEscalationPolicy(
       data.serviceId
     );
-    return this.parseEscalationPolicy(escalationPolicyFromDb);
-  }
-
-  private parseEscalationPolicy(data: any): EscalationPolicy {
-    return EscalationPolicy.fromJSON({
-      id: data.id,
-      service_id: data.serviceId,
-      levels: data.levels,
-    });
+    return parseEscalationPolicyFromDTO(escalationPolicyFromDb);
   }
 
   private async setMonitoredService(
@@ -102,20 +97,10 @@ class SetNewAcknowledgeTimeout {
   ): Promise<void> {
     await this.pagerRepository.setMonitoredService({
       service_id: monitoredService.serviceId,
-      acknowledged: true,
+      acknowledged: monitoredService.acknowledged,
       healthy: monitoredService.healthy,
-      escalation_level: monitoredService.escalationLevel,
+      escalation_level: monitoredService.escalationLevel + 1,
     });
-  }
-
-  private isServiceHealthy(monitoredService: MonitoredService): boolean {
-    return monitoredService.healthy;
-  }
-
-  private isServiceAlreadyAcknowledged(
-    monitoredService: MonitoredService
-  ): boolean {
-    return monitoredService.acknowledged;
   }
 
   private doesTheServiceHaveMoreLevels(
@@ -131,11 +116,11 @@ class SetNewAcknowledgeTimeout {
     monitoredService: MonitoredService,
     escalationPolicy: EscalationPolicy
   ): void {
-    if (this.isServiceHealthy(monitoredService)) {
+    if (isServiceHealthy(monitoredService)) {
       throw new ServiceIsHealthyException();
     }
 
-    if (this.isServiceAlreadyAcknowledged(monitoredService)) {
+    if (isServiceAlreadyAcknowledged(monitoredService)) {
       throw new ServiceIsAlreadyAcknowledgedException();
     }
 
@@ -146,15 +131,11 @@ class SetNewAcknowledgeTimeout {
     }
   }
 
-  private isChannelSMS(channel: SMS | Email): channel is SMS {
-    return (channel as SMS).phoneNumber !== undefined;
-  }
-
   private async handleTargetAlerting(
     targets: EscalationTarget[]
   ): Promise<void> {
     for (let target of targets) {
-      if (this.isChannelSMS(target.channel)) {
+      if (isChannelSMS(target.channel)) {
         await this.sendSMSAltert(target.channel.phoneNumber);
       } else {
         await this.sendEmailAlert(target.channel.address);

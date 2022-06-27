@@ -11,7 +11,13 @@ import SetMonitoredServiceAsUnhealthyValidator from "../validator/SetMonitoredSe
 import MonitoredService from "../../domain/model/MonitoredService";
 import ServiceIsUnhealthyException from "../../domain/exception/ServiceIsUnhealthyException";
 import EscalationPolicy from "../../domain/model/EscalationPolicy";
-import { Email, EscalationTarget, SMS } from "../../domain/model/types";
+import { EscalationTarget } from "../../domain/model/types";
+import {
+  isChannelSMS,
+  isServiceHealthy,
+  parseEscalationPolicyFromDTO,
+  parseMonitoredServiceFromDTO,
+} from "../lib/common";
 
 class FlagServiceAsUnhealthy {
   private pagerRepository: PagerRepository;
@@ -34,15 +40,15 @@ class FlagServiceAsUnhealthy {
     this.escalationPolicyService = escalationPolicyService;
   }
 
-  async execute(data: SetMonitoredServiceAsUnhealthyDTO): Promise<any> {
+  async execute(data: any): Promise<any> {
     await this.validate(data);
 
-    const monitoredService = await this.getMonitoredService(data.serviceId);
+    const monitoredService = await this.getMonitoredService(data);
 
-    if (this.isServiceHealthy(monitoredService)) {
+    if (isServiceHealthy(monitoredService)) {
       await this.flagMonitoredServiceAsUnhealthy(monitoredService);
 
-      const escalationPolicy = await this.getEscalationPolicy(data.serviceId);
+      const escalationPolicy = await this.getEscalationPolicy(data);
 
       const targets =
         escalationPolicy.levels[monitoredService.escalationLevel].targets;
@@ -55,9 +61,7 @@ class FlagServiceAsUnhealthy {
     }
   }
 
-  private async validate(
-    data: SetMonitoredServiceAsUnhealthyDTO
-  ): Promise<void> {
+  private async validate(data: any): Promise<void> {
     const validator = new SetMonitoredServiceAsUnhealthyValidator();
 
     if (!(await validator.validate(data))) {
@@ -67,23 +71,13 @@ class FlagServiceAsUnhealthy {
     }
   }
 
-  private isServiceHealthy(monitoredService: MonitoredService): boolean {
-    return monitoredService.healthy;
-  }
-
-  private async getMonitoredService(data: any): Promise<MonitoredService> {
+  private async getMonitoredService(
+    data: SetMonitoredServiceAsUnhealthyDTO
+  ): Promise<MonitoredService> {
     const monitoredServiceFromDb = await this.pagerRepository.getMonitoredService(
       data.serviceId
     );
-    return this.parseMonitoredService(monitoredServiceFromDb);
-  }
-
-  private parseMonitoredService(data: any): MonitoredService {
-    return MonitoredService.fromJSON({
-      service_id: data.service_id,
-      acknowledged: data.acknowledged,
-      healthy: data.healthy,
-    });
+    return parseMonitoredServiceFromDTO(monitoredServiceFromDb);
   }
 
   private async flagMonitoredServiceAsUnhealthy(
@@ -97,30 +91,20 @@ class FlagServiceAsUnhealthy {
     });
   }
 
-  private async getEscalationPolicy(data: any): Promise<EscalationPolicy> {
+  private async getEscalationPolicy(
+    data: SetMonitoredServiceAsUnhealthyDTO
+  ): Promise<EscalationPolicy> {
     const escalationPolicyFromDb = await this.escalationPolicyService.getEscalationPolicy(
       data.serviceId
     );
-    return this.parseEscalationPolicy(escalationPolicyFromDb);
-  }
-
-  private parseEscalationPolicy(data: any): EscalationPolicy {
-    return EscalationPolicy.fromJSON({
-      id: data.id,
-      service_id: data.serviceId,
-      levels: data.levels,
-    });
-  }
-
-  private isChannelSMS(channel: SMS | Email): channel is SMS {
-    return (channel as SMS).phoneNumber !== undefined;
+    return parseEscalationPolicyFromDTO(escalationPolicyFromDb);
   }
 
   private async handleTargetAlerting(
     targets: EscalationTarget[]
   ): Promise<void> {
     for (let target of targets) {
-      if (this.isChannelSMS(target.channel)) {
+      if (isChannelSMS(target.channel)) {
         await this.sendSMSAltert(target.channel.phoneNumber);
       } else {
         await this.sendEmailAlert(target.channel.address);

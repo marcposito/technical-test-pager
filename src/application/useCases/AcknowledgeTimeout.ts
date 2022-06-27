@@ -3,6 +3,10 @@ import ValidationException from "../../domain/exception/ValidationException";
 import MonitoredService from "../../domain/model/MonitoredService";
 import { AcknowledgeTimeoutDTO } from "../../domain/ports/in";
 import { PagerRepository } from "../../domain/ports/out";
+import {
+  isServiceAlreadyAcknowledged,
+  parseMonitoredServiceFromDTO,
+} from "../lib/common";
 import AcknowledgeTimeoutValidator from "../validator/AcknowledgeTimeoutValidator";
 
 class AcknowledgeTimeout {
@@ -12,12 +16,12 @@ class AcknowledgeTimeout {
     this.pagerRepository = pagerRepository;
   }
 
-  async execute(data: AcknowledgeTimeoutDTO): Promise<any> {
+  async execute(data: any): Promise<any> {
     await this.validate(data);
 
-    const monitoredService = await this.getMonitoredService(data.serviceId);
+    const monitoredService = await this.getMonitoredService(data);
 
-    if (this.isServiceAlreadyAcknowledged(monitoredService)) {
+    if (isServiceAlreadyAcknowledged(monitoredService)) {
       throw new ServiceIsAlreadyAcknowledgedException();
     } else {
       await this.pagerRepository.setMonitoredService({
@@ -29,7 +33,7 @@ class AcknowledgeTimeout {
     }
   }
 
-  private async validate(data: AcknowledgeTimeoutDTO): Promise<void> {
+  private async validate(data: any): Promise<void> {
     const validator = new AcknowledgeTimeoutValidator();
 
     if (!(await validator.validate(data))) {
@@ -39,25 +43,13 @@ class AcknowledgeTimeout {
     }
   }
 
-  private async getMonitoredService(data: any): Promise<MonitoredService> {
+  private async getMonitoredService(
+    data: AcknowledgeTimeoutDTO
+  ): Promise<MonitoredService> {
     const monitoredServiceFromDb = await this.pagerRepository.getMonitoredService(
       data.serviceId
     );
-    return this.parseMonitoredService(monitoredServiceFromDb);
-  }
-
-  private parseMonitoredService(data: any): MonitoredService {
-    return MonitoredService.fromJSON({
-      service_id: data.service_id,
-      acknowledged: data.acknowledged,
-      healthy: data.healthy,
-    });
-  }
-
-  private isServiceAlreadyAcknowledged(
-    monitoredService: MonitoredService
-  ): boolean {
-    return monitoredService.acknowledged;
+    return parseMonitoredServiceFromDTO(monitoredServiceFromDb);
   }
 }
 
