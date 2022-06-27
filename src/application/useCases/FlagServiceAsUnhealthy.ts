@@ -3,11 +3,11 @@ import {
   ServiceIsUnhealthyException,
 } from "../../domain/exception";
 import {
-  EmailService,
-  SmsService,
-  EscalationPolicyService,
-  PagerRepository,
-  TimerService,
+  IEmailService,
+  ISmsService,
+  IEscalationPolicyService,
+  IPagerRepository,
+  ITimerService,
 } from "../../domain/ports/out";
 import { ISetMonitoredServiceAsUnhealthy } from "../../domain/ports/in";
 import SetMonitoredServiceAsUnhealthyValidator from "../validator/SetMonitoredServiceAsUnhealthyValidator";
@@ -22,18 +22,18 @@ import {
 } from "../lib/common";
 
 class FlagServiceAsUnhealthy {
-  private pagerRepository: PagerRepository;
-  private smsService: SmsService;
-  private emailService: EmailService;
-  private timerService: TimerService;
-  private escalationPolicyService: EscalationPolicyService;
+  private pagerRepository: IPagerRepository;
+  private smsService: ISmsService;
+  private emailService: IEmailService;
+  private timerService: ITimerService;
+  private escalationPolicyService: IEscalationPolicyService;
 
   constructor(
-    pagerRepository: PagerRepository,
-    smsService: SmsService,
-    emailService: EmailService,
-    timerService: TimerService,
-    escalationPolicyService: EscalationPolicyService
+    pagerRepository: IPagerRepository,
+    smsService: ISmsService,
+    emailService: IEmailService,
+    timerService: ITimerService,
+    escalationPolicyService: IEscalationPolicyService
   ) {
     this.pagerRepository = pagerRepository;
     this.smsService = smsService;

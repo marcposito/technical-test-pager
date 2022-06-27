@@ -9,11 +9,11 @@ import MonitoredService from "../../domain/model/MonitoredService";
 import { EscalationTarget } from "../../domain/model/types";
 import { ISetNewAcknowledgeTimeout } from "../../domain/ports/in";
 import {
-  PagerRepository,
-  SmsService,
-  EmailService,
-  EscalationPolicyService,
-  TimerService,
+  IPagerRepository,
+  ISmsService,
+  IEmailService,
+  IEscalationPolicyService,
+  ITimerService,
 } from "../../domain/ports/out";
 import {
   isChannelSMS,
@@ -25,18 +25,18 @@ import {
 import SetNewAcknowledgedTimeoutValidator from "../validator/SetNewAcknowledgedTimeoutValidator";
 
 class SetNewAcknowledgeTimeout {
-  private pagerRepository: PagerRepository;
-  private smsService: SmsService;
-  private emailService: EmailService;
-  private timerService: TimerService;
-  private escalationPolicyService: EscalationPolicyService;
+  private pagerRepository: IPagerRepository;
+  private smsService: ISmsService;
+  private emailService: IEmailService;
+  private timerService: ITimerService;
+  private escalationPolicyService: IEscalationPolicyService;
 
   constructor(
-    pagerRepository: PagerRepository,
-    smsService: SmsService,
-    emailService: EmailService,
-    timerService: TimerService,
-    escalationPolicyService: EscalationPolicyService
+    pagerRepository: IPagerRepository,
+    smsService: ISmsService,
+    emailService: IEmailService,
+    timerService: ITimerService,
+    escalationPolicyService: IEscalationPolicyService
   ) {
     this.pagerRepository = pagerRepository;
     this.smsService = smsService;

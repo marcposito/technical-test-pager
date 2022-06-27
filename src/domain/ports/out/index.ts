@@ -1,5 +1,5 @@
-export { EmailService } from "./EmailService";
-export { SmsService } from "./SmsService";
-export { EscalationPolicyService } from "./EscalationPolicyService";
-export { PagerRepository } from "./PagerRepository";
-export { TimerService } from "./TimerService";
+export { IEmailService } from "./EmailService";
+export { ISmsService } from "./SmsService";
+export { IEscalationPolicyService } from "./EscalationPolicyService";
+export { IPagerRepository } from "./PagerRepository";
+export { ITimerService } from "./TimerService";
