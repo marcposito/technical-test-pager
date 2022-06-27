@@ -1,7 +1,9 @@
-import ServiceDoesNotHaveMoreLevelsException from "../../domain/exception/ServiceDoesNotHaveMoreLevelsException";
-import ServiceIsAlreadyAcknowledgedException from "../../domain/exception/ServiceIsAlreadyAckknowledgedException";
-import ServiceIsHealthyException from "../../domain/exception/ServiceIsHealthyException";
-import ValidationException from "../../domain/exception/ValidationException";
+import {
+  ValidationException,
+  ServiceIsHealthyException,
+  ServiceIsAlreadyAcknowledgedException,
+  ServiceDoesNotHaveMoreLevelsException,
+} from "../../domain/exception";
 import EscalationPolicy from "../../domain/model/EscalationPolicy";
 import MonitoredService from "../../domain/model/MonitoredService";
 import { EscalationTarget } from "../../domain/model/types";

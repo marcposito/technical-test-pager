@@ -1,4 +1,7 @@
-import ValidationException from "../../domain/exception/ValidationException";
+import {
+  ValidationException,
+  ServiceIsUnhealthyException,
+} from "../../domain/exception";
 import {
   EmailService,
   SmsService,
@@ -9,7 +12,6 @@ import {
 import { ISetMonitoredServiceAsUnhealthy } from "../../domain/ports/in";
 import SetMonitoredServiceAsUnhealthyValidator from "../validator/SetMonitoredServiceAsUnhealthyValidator";
 import MonitoredService from "../../domain/model/MonitoredService";
-import ServiceIsUnhealthyException from "../../domain/exception/ServiceIsUnhealthyException";
 import EscalationPolicy from "../../domain/model/EscalationPolicy";
 import { EscalationTarget } from "../../domain/model/types";
 import {
