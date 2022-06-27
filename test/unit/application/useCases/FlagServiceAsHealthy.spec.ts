@@ -104,7 +104,7 @@ describe("src/application/useCases/example/FlagServiceAsHealthyUseCase", async f
   });
 
   it("should throw a validation error if we do not receive a service id", async function () {
-    validatSetMonitoredServiceAsHealthyValidatorStub.resolves(true);
+    validatSetMonitoredServiceAsHealthyValidatorStub.resolves(false);
     getErrorsSetMonitoredServiceAsHealthyValidatorStub.resolves([
       { field: "serviceId", message: '"serviceid" must be a string' },
     ]);

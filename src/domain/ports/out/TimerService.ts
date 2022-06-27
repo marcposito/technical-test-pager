@@ -1,3 +1,3 @@
 export interface ITimerService {
-  setTimer(serviceId: string): Promise<any>;
+  setTimer(serviceId: string): Promise<void>;
 }

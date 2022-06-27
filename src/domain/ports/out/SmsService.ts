@@ -1,3 +1,3 @@
 export interface ISmsService {
-  sendNotification(phoneNumber: number): Promise<any>;
+  sendNotification(phoneNumber: number): Promise<void>;
 }

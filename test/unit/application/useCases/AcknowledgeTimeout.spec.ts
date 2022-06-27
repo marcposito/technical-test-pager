@@ -98,7 +98,7 @@ describe("src/application/useCases/example/AcknowledgeTimeoutUseCase", async fun
   });
 
   it("should throw a validation error if we do not receive a service id", async function () {
-    validateAcknowledgeTimeoutValidator.resolves(true);
+    validateAcknowledgeTimeoutValidator.resolves(false);
     getErrorsAcknowledgeTimeoutValidatorStub.resolves([
       { field: "serviceId", message: '"serviceid" must be a string' },
     ]);

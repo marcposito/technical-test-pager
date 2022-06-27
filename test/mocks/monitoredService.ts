@@ -26,3 +26,12 @@ export const getMonitoredServiceHealthyInputData = (): MonitoredServiceDTO => {
     escalation_level: 0,
   };
 };
+
+export const getMonitoredServiceHealthyNoAcknowledgedInputData = (): MonitoredServiceDTO => {
+  return {
+    service_id: "test-service-id",
+    acknowledged: false,
+    healthy: true,
+    escalation_level: 0,
+  };
+};
