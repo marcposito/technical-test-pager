@@ -9,6 +9,15 @@ export const getMonitoredServiceInputData = (): MonitoredServiceDTO => {
   };
 };
 
+export const getMonitoredServiceInputDataNoAvailableLevels = (): MonitoredServiceDTO => {
+  return {
+    service_id: "test-service-id",
+    acknowledged: false,
+    healthy: false,
+    escalation_level: 1,
+  };
+};
+
 export const getMonitoredServiceAcknowledgedInputData = (): MonitoredServiceDTO => {
   return {
     service_id: "test-service-id",
