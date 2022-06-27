@@ -1,9 +1,7 @@
-import DTO from "../../model/DTO";
-
-export interface SetMonitoredServiceAsHealthyDTO extends DTO {
+export interface ISetMonitoredServiceAsHealthy {
   serviceId: string;
 }
 
-export interface AcknowledgeTimeoutDTO extends DTO {
+export interface IAcknowledgeTimeout {
   serviceId: string;
 }

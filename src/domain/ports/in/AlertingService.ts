@@ -1,5 +1,3 @@
-import DTO from "../../model/DTO";
-
-export interface SetMonitoredServiceAsUnhealthyDTO extends DTO {
+export interface ISetMonitoredServiceAsUnhealthy {
   serviceId: string;
 }

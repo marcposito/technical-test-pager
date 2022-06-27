@@ -1,6 +1,6 @@
-export { SetMonitoredServiceAsUnhealthyDTO } from "./AlertingService";
+export { ISetMonitoredServiceAsUnhealthy } from "./AlertingService";
 export {
-  AcknowledgeTimeoutDTO,
-  SetMonitoredServiceAsHealthyDTO,
+  IAcknowledgeTimeout,
+  ISetMonitoredServiceAsHealthy,
 } from "./ConsoleService";
-export { SetNewAcknowledgeTimeoutDTO } from "./TimerService";
+export { ISetNewAcknowledgeTimeout } from "./TimerService";

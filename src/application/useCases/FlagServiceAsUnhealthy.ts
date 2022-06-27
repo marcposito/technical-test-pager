@@ -6,7 +6,7 @@ import {
   PagerRepository,
   TimerService,
 } from "../../domain/ports/out";
-import { SetMonitoredServiceAsUnhealthyDTO } from "../../domain/ports/in";
+import { ISetMonitoredServiceAsUnhealthy } from "../../domain/ports/in";
 import SetMonitoredServiceAsUnhealthyValidator from "../validator/SetMonitoredServiceAsUnhealthyValidator";
 import MonitoredService from "../../domain/model/MonitoredService";
 import ServiceIsUnhealthyException from "../../domain/exception/ServiceIsUnhealthyException";
@@ -72,7 +72,7 @@ class FlagServiceAsUnhealthy {
   }
 
   private async getMonitoredService(
-    data: SetMonitoredServiceAsUnhealthyDTO
+    data: ISetMonitoredServiceAsUnhealthy
   ): Promise<MonitoredService> {
     const monitoredServiceFromDb = await this.pagerRepository.getMonitoredService(
       data.serviceId
@@ -92,7 +92,7 @@ class FlagServiceAsUnhealthy {
   }
 
   private async getEscalationPolicy(
-    data: SetMonitoredServiceAsUnhealthyDTO
+    data: ISetMonitoredServiceAsUnhealthy
   ): Promise<EscalationPolicy> {
     const escalationPolicyFromDb = await this.escalationPolicyService.getEscalationPolicy(
       data.serviceId

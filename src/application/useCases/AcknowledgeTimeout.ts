@@ -1,7 +1,7 @@
 import ServiceIsAlreadyAcknowledgedException from "../../domain/exception/ServiceIsAlreadyAckknowledgedException";
 import ValidationException from "../../domain/exception/ValidationException";
 import MonitoredService from "../../domain/model/MonitoredService";
-import { AcknowledgeTimeoutDTO } from "../../domain/ports/in";
+import { IAcknowledgeTimeout } from "../../domain/ports/in";
 import { PagerRepository } from "../../domain/ports/out";
 import {
   isServiceAlreadyAcknowledged,
@@ -44,7 +44,7 @@ class AcknowledgeTimeout {
   }
 
   private async getMonitoredService(
-    data: AcknowledgeTimeoutDTO
+    data: IAcknowledgeTimeout
   ): Promise<MonitoredService> {
     const monitoredServiceFromDb = await this.pagerRepository.getMonitoredService(
       data.serviceId

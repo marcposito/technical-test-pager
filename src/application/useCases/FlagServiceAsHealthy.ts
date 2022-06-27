@@ -1,7 +1,7 @@
 import ServiceIsHealthyException from "../../domain/exception/ServiceIsHealthyException";
 import ValidationException from "../../domain/exception/ValidationException";
 import MonitoredService from "../../domain/model/MonitoredService";
-import { SetMonitoredServiceAsHealthyDTO } from "../../domain/ports/in/ConsoleService";
+import { ISetMonitoredServiceAsHealthy } from "../../domain/ports/in";
 import { PagerRepository } from "../../domain/ports/out";
 import { isServiceHealthy, parseMonitoredServiceFromDTO } from "../lib/common";
 import SetMonitoredServiceAsHealthyValidator from "../validator/SetMonitoredServiceAsHealthyValidator";
@@ -41,7 +41,7 @@ class FlagServiceAsHealthy {
   }
 
   private async getMonitoredService(
-    data: SetMonitoredServiceAsHealthyDTO
+    data: ISetMonitoredServiceAsHealthy
   ): Promise<MonitoredService> {
     const monitoredServiceFromDb = await this.pagerRepository.getMonitoredService(
       data.serviceId

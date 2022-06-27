@@ -5,7 +5,7 @@ import ValidationException from "../../domain/exception/ValidationException";
 import EscalationPolicy from "../../domain/model/EscalationPolicy";
 import MonitoredService from "../../domain/model/MonitoredService";
 import { EscalationTarget } from "../../domain/model/types";
-import { SetNewAcknowledgeTimeoutDTO } from "../../domain/ports/in";
+import { ISetNewAcknowledgeTimeout } from "../../domain/ports/in";
 import {
   PagerRepository,
   SmsService,
@@ -75,7 +75,7 @@ class SetNewAcknowledgeTimeout {
   }
 
   private async getMonitoredService(
-    data: SetNewAcknowledgeTimeoutDTO
+    data: ISetNewAcknowledgeTimeout
   ): Promise<MonitoredService> {
     const monitoredServiceFromDb = await this.pagerRepository.getMonitoredService(
       data.serviceId
@@ -84,7 +84,7 @@ class SetNewAcknowledgeTimeout {
   }
 
   private async getEscalationPolicy(
-    data: SetNewAcknowledgeTimeoutDTO
+    data: ISetNewAcknowledgeTimeout
   ): Promise<EscalationPolicy> {
     const escalationPolicyFromDb = await this.escalationPolicyService.getEscalationPolicy(
       data.serviceId
