@@ -2,7 +2,7 @@ import { ValidationErrorItem } from "@hapi/joi";
 import IDomainModelValidator from "./DomainModelValidator";
 import { ObjectSchema } from "@hapi/joi";
 import IValidationError from "./ValidationError";
-import DTO from "../../domain/model/DTO";
+import DTO from "../dto/DTO";
 
 abstract class Validator implements IDomainModelValidator<DTO> {
   private errors: Array<ValidationErrorItem>;
