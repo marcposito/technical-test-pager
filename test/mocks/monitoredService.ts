@@ -17,3 +17,12 @@ export const getMonitoredServiceAcknowledgedInputData = (): MonitoredServiceDTO 
     escalation_level: 0,
   };
 };
+
+export const getMonitoredServiceHealthyInputData = (): MonitoredServiceDTO => {
+  return {
+    service_id: "test-service-id",
+    acknowledged: true,
+    healthy: true,
+    escalation_level: 0,
+  };
+};
