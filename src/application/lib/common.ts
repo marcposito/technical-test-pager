@@ -31,5 +31,6 @@ export const parseMonitoredServiceFromDTO = (
     service_id: data.service_id,
     acknowledged: data.acknowledged,
     healthy: data.healthy,
+    escalation_level: data.escalation_level,
   });
 };

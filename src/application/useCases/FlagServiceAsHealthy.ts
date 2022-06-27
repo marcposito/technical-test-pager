@@ -1,15 +1,15 @@
-import ServiceIsHealthyException from "../../domain/exception/ServiceIsHealthyException";
-import ValidationException from "../../domain/exception/ValidationException";
+import { ServiceIsHealthyException } from "../../domain/exception/ServiceIsHealthyException";
+import { ValidationException } from "../../domain/exception/ValidationException";
 import MonitoredService from "../../domain/model/MonitoredService";
 import { ISetMonitoredServiceAsHealthy } from "../../domain/ports/in";
-import { PagerRepository } from "../../domain/ports/out";
+import { IPagerRepository } from "../../domain/ports/out";
 import { isServiceHealthy, parseMonitoredServiceFromDTO } from "../lib/common";
 import SetMonitoredServiceAsHealthyValidator from "../validator/SetMonitoredServiceAsHealthyValidator";
 
 class FlagServiceAsHealthy {
-  private pagerRepository: PagerRepository;
+  private pagerRepository: IPagerRepository;
 
-  constructor(pagerRepository: PagerRepository) {
+  constructor(pagerRepository: IPagerRepository) {
     this.pagerRepository = pagerRepository;
   }
 

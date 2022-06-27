@@ -1,8 +1,8 @@
-import ServiceIsAlreadyAcknowledgedException from "../../domain/exception/ServiceIsAlreadyAckknowledgedException";
-import ValidationException from "../../domain/exception/ValidationException";
+import { ServiceIsAlreadyAcknowledgedException } from "../../domain/exception/ServiceIsAlreadyAckknowledgedException";
+import { ValidationException } from "../../domain/exception";
 import MonitoredService from "../../domain/model/MonitoredService";
 import { IAcknowledgeTimeout } from "../../domain/ports/in";
-import { PagerRepository } from "../../domain/ports/out";
+import { IPagerRepository } from "../../domain/ports/out";
 import {
   isServiceAlreadyAcknowledged,
   parseMonitoredServiceFromDTO,
@@ -10,13 +10,13 @@ import {
 import AcknowledgeTimeoutValidator from "../validator/AcknowledgeTimeoutValidator";
 
 class AcknowledgeTimeout {
-  private pagerRepository: PagerRepository;
+  private pagerRepository: IPagerRepository;
 
-  constructor(pagerRepository: PagerRepository) {
+  constructor(pagerRepository: IPagerRepository) {
     this.pagerRepository = pagerRepository;
   }
 
-  async execute(data: any): Promise<any> {
+  async execute(data: any): Promise<void> {
     await this.validate(data);
 
     const monitoredService = await this.getMonitoredService(data);
