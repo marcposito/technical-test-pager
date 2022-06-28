@@ -96,7 +96,9 @@ As you see under application/useCases we have four different files. I've structu
 
 I've created a infrastructure folder with the basical setup to run the project. I know it wasn't needed but I'd rather have it because I do not know if you'll need to run the project. I did not create any dockerfile or docker-compose (hope it wasn't necessary).
 
-Related to persistence, apart from having the target as SMS or Email we could also have another filed called alterted which could be a boolean. So every time we alert a target we can flag that field and we can avoid sending multiple alerts to the same target.
+**Important**: When we call to the services we are not doing a try/catch to handle exceptions in the use case. That handling would occur inside the adapter implementation.
+
+Related to persistence, apart from having the target as SMS or Email we could also have another filed called alerted which could be a boolean. So every time we alert a target we can flag that field and we can avoid sending multiple alerts to the same target.
 
 ## Multiple validators
 
