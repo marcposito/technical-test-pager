@@ -60,7 +60,7 @@ In my opinion the difficulty lies in being able to design a system which can com
 
 After some careful I've done a diagram to have an overview of the system behaviour.
 
-![image info](./pictures/image.png)
+![image info](./documentation/flows.png)
 
 ## Creating an architecture to be able to support the current system
 
