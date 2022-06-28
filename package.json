@@ -5,7 +5,6 @@
   "author": "Marc Posito Roda",
   "license": "ISC",
   "engines": {
-    "npm": ">= 8.1.2",
     "node": ">= 16.14.0"
   },
   "main": "src/app.ts",
@@ -14,13 +13,9 @@
     "start:dev": "npm run ts -- src/app.ts",
     "build": "tsc",
     "lint": "tslint -c tslint.json 'src/**/*.ts'",
-    "watch": "tsc -w",
     "ts": "NODE_TLS_REJECT_UNAUTHORIZED=0 NODE_PATH=src node --require ts-node/register --require universal-dotenv/register",
-    "test": "npm run test:unit && npm run test:integration",
     "test:unit": "mocha -r ts-node/register test/unit/**/*.spec.ts",
-    "test:coverage": "NODE_ENV=test nyc --reporter=lcov npm run test:unit",
-    "test:xunit": "mocha -r xunit src/**/*.spec.ts",
-    "coverage:cobertura": "NODE_ENV=test nyc --reporter=cobertura npm test"
+    "test:coverage": "NODE_ENV=test nyc --reporter=lcov npm run test:unit"
   },
   "dependencies": {
     "@hapi/joi": "17.1.1",
